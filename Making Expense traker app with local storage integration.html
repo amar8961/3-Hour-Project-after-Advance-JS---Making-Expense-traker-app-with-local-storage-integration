@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      3 Hour Project after Advance JS - Making Expense traker app with local
+      storage integration - Sharpener
+    </title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body style="background-color: green">
+    <div
+      style="
+        border: 5px red solid;
+        background-color: orange;
+        margin-top: 50px;
+        margin-left: 50px;
+        margin-right: 50px;
+      "
+    >
+      <h2 style="text-align: center; color: red">
+        3 Hour Project after Advance JS - Making Expense traker app with local
+        storage integration - Sharpener
+      </h2>
+      <hr width="100%" size="5px" style="background-color: black" />
+      <form
+        style="text-align: center"
+        id="myform"
+        onsubmit="saveToLocalStorage(event)"
+      >
+        <label>Choose Expense Amount :</label>
+        <input type="text" id="expense" /><br /><br />
+        <label>Choose Description :</label>
+        <input type="text" id="description" /><br /><br />
+        <label>Choose a Dategory :</label>
+        <select id="category">
+          <option value="Movie">Movie</option>
+          <option value="Dinner">Dinner</option>
+          <option value="Fuel">Fuel</option></select
+        ><br /><br />
+        <input type="submit" value="Add Expenses" />
+
+        <!-- for show data in DOM -->
+        <hr width="100%" size="5px" style="background-color: black" />
+        <ul id="expenseTracker"></ul>
+      </form>
+    </div>
+
+    <script>
+      //// save data in local storage
+      function saveToLocalStorage(event) {
+        event.preventDefault();
+        const exp = event.target.expense.value;
+        const desc = event.target.description.value;
+        const cate = event.target.category.value;
+
+        const obj = {
+          expense: exp,
+          description: desc,
+          category: cate,
+        };
+        // localStorage.setItem("userDetails", JSON.stringify(obj));
+        //// save data in local storage ////
+
+        //// show data on screen
+        //// here we make expense as key
+        localStorage.setItem(obj.expense, JSON.stringify(obj));
+        showNewUserOnScreen(obj);
+
+        // Clear DOM fields after submit
+        document.getElementById("expense").value = "";
+        document.getElementById("description").value = "";
+        document.getElementById("category").value = "";
+      }
+
+      //// show data on screen //// add a delete button //// add edit button
+      //// with delete buttion we use "deleteExpense('${user.expense}')"" to take expense as key and pass "deleteExpense(userExpense)" at function creation
+      function showNewUserOnScreen(user) {
+        // if user with same expenses just change description and category (if it found same expense then it remove old data and add new)
+        if (localStorage.getItem(user.expense) !== null) {
+          removeUserFromScreen(user.expense);
+        }
+
+        const parentNode = document.getElementById("expenseTracker");
+        const childHTML = `<li id=${user.expense}> ${user.expense} - ${user.description} - ${user.category}
+                                <button onclick=deleteExpense('${user.expense}')> Delete Expense </button>
+                                <button onclick=editExpense('${user.expense}','${user.description}','${user.category}')> Edit </button>
+                            </li>`;
+
+        parentNode.innerHTML = parentNode.innerHTML + childHTML;
+      }
+      //// show data on screen ////
+
+      //// delete - function for expense -> we passexpensee through userExpense because we use expense as key in delete button
+      function deleteExpense(userExpense) {
+        // console.log(userExpense);
+        localStorage.removeItem(userExpense);
+        removeUserFromScreen(userExpense);
+      }
+
+      function removeUserFromScreen(userExpense) {
+        const parentNode = document.getElementById("expenseTracker");
+        const childNodeToBeDeleted = document.getElementById(userExpense);
+
+        if (childNodeToBeDeleted) {
+          parentNode.removeChild(childNodeToBeDeleted);
+        }
+      }
+      //// delete - function for expense ////
+
+      //// edit - function for expense
+      function editExpense(userExpense, description, category) {
+        document.getElementById("expense").value = userExpense;
+        document.getElementById("description").value = description;
+        document.getElementById("category").value = category;
+
+        deleteExpense(userExpense);
+      }
+      //// edit - function for Expense ////
+    </script>
+  </body>
+</html>
